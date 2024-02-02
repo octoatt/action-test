@@ -46,5 +46,11 @@ jobs:
         uses: mshick/add-pr-comment@v2
         with:
            repo-token: ${{ secrets.ALLY_BOT }}
-           message-id: allybot
-           message: "token test"
+           message-id: allybot1
+           message: "token test 1"
+      - name: Comment on the pull request
+        uses: mshick/add-pr-comment@v2
+        with:
+           repo-token: ${{ secrets.ALLY_BOT }}
+           message-id: allybot2
+           message: "token test 2"
