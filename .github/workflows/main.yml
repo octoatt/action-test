@@ -46,4 +46,5 @@ jobs:
         uses: mshick/add-pr-comment@v2
         with:
            repo-token: ${{ secrets.ALLY_BOT }}
+           message-id: allybot
            message: "token test"
