@@ -42,3 +42,8 @@ jobs:
             git checkout ${{ github.event.pull_request.base.ref }}
             echo git checkout ${{ github.event.pull_request.head.ref }}
             git checkout ${{ github.event.pull_request.head.ref }}
+      - name: Comment on the pull request
+        uses: mshick/add-pr-comment@v2
+        with:
+           repo-token: ${{ secrets.ALLY_BOT }}
+           message: "token test"
