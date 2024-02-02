@@ -42,6 +42,7 @@ jobs:
             git checkout ${{ github.event.pull_request.base.ref }}
             echo git checkout ${{ github.event.pull_request.head.ref }}
             git checkout ${{ github.event.pull_request.head.ref }}
+            echo "message3=$(openssl rand -base64 12)" >> $GITHUB_ENV
       - name: Comment on the pull request
         uses: mshick/add-pr-comment@v2
         with:
@@ -54,3 +55,21 @@ jobs:
            repo-token: ${{ secrets.ALLY_BOT }}
            message-id: allybot2
            message: "token test 2"
+      - name: Comment on the pull request
+        uses: mshick/add-pr-comment@v2
+        with:
+           repo-token: ${{ secrets.ALLY_BOT }}
+           message-id: allybot1
+           message: "token test 3"
+      - name: Comment on the pull request
+        uses: mshick/add-pr-comment@v2
+        with:
+           repo-token: ${{ secrets.ALLY_BOT }}
+           message-id: allybot2
+           message: "token test 4"
+      - name: Comment on the pull request
+        uses: mshick/add-pr-comment@v2
+        with:
+           repo-token: ${{ secrets.ALLY_BOT }}
+           message-id: allybot3
+           message: "${{ env.message3 }}"
