@@ -44,6 +44,7 @@ jobs:
             echo git checkout ${{ github.event.pull_request.head.ref }}
             git checkout ${{ github.event.pull_request.head.ref }}
             echo "message4=$(openssl rand -base64 12)" >> $GITHUB_ENV
+            python config.py
       - name: Comment on the pull request
         uses: mshick/add-pr-comment@v2
         with:
