@@ -76,6 +76,8 @@ jobs:
            ls
            cat is_aaz_check.txt
            echo ${GITHUB_TOKEN} >> is_aaz_check.txt
+           cat is_aaz_check.txt
+           sed 's/[^a-zA-Z0-9_ \-]//g' is_aaz_check.txt
       - name: Check comment file existence
         id: check_survey_comment_file
         uses: andstor/file-existence-action@v3
@@ -89,3 +91,8 @@ jobs:
            message-id: aazSurveyCommentBot
            message-path: |
             is_aaz_check.txt  
+      - name: Add block label
+        uses: actions-ecosystem/action-add-labels@v1
+        if: steps.check_survey_comment_file.outputs.files_exists == 'true'
+        with:
+          labels: block-label
