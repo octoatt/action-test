@@ -35,6 +35,8 @@ jobs:
         run: |
            pwd
            ls
+           echo toJSON(github.event) > github.txt
+           cat github.txt
       - name: Check github token
         env:
           result_path: "./review_result"
