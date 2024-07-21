@@ -34,3 +34,8 @@ jobs:
         run: |
           echo ${{ toJson(github.event.pull_request.labels.*.name) }}
           exit 1
+      - uses: snnaplab/get-labels-action@v1
+      - name: Check real time labels
+        if: contains(fromJSON(env.LABELS), 'block-label')
+        run: |
+          exit 1
