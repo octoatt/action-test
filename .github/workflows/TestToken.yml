@@ -111,5 +111,5 @@ jobs:
       - name: Trigger Workflow B
         run: |
           curl -X POST \  
-            https://api.github.com/repos/${{ github.repository }}/actions/workflows/BlockLabelJob.yml/dispatches \
-            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}"
+          https://api.github.com/repos/${{ github.repository }}/actions/workflows/BlockLabelJob.yml/dispatches \
+          -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}"
