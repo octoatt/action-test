@@ -32,10 +32,12 @@ jobs:
           ref: ${{ github.event.pull_request.head.ref }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}  # checkout pull request branch
       - name: Show workdirectory after site cloned
+        env:
+           gh_event: ${{ toJSON(github.event) }}
         run: |
            pwd
            ls
-           echo toJSON(github.event) > github.txt
+           echo ${gh_event} > github.txt
            cat github.txt
       - name: Check github token
         env:
