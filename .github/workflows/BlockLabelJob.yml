@@ -2,6 +2,7 @@ name: Block PR merging on blocked labels
 
 on:
   workflow_call:
+  workflow_dispatch:
   pull_request_target:
     types: [opened, labeled, unlabeled, synchronize]
     branches:
