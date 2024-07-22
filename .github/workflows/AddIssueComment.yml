@@ -16,4 +16,4 @@ jobs:
            repo-token: ${{ secrets.GITHUB_TOKEN }}
            message-id: issueNoSecurityCommentBot
            message-path: |
-            .github/template/np-security-comment.md
+            ../template/np-security-comment.md
