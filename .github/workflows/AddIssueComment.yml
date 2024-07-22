@@ -10,10 +10,14 @@ jobs:
       issues: write
     name: Comment on issue
     steps:
+      - name: Show workdirectory
+        run: |
+           pwd
+           ls
       - name: Comment on issue with no security label
         uses: mshick/add-pr-comment@v2
         with:
            repo-token: ${{ secrets.GITHUB_TOKEN }}
            message-id: issueNoSecurityCommentBot
            message-path: |
-            ../template/np-security-comment.md
+            .github/template/np-security-comment.md
