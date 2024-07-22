@@ -10,6 +10,11 @@ jobs:
       issues: write
     name: Comment on issue
     steps:
+      - name: Checkout comment message
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            .github/template/np-security-comment.md
       - name: Show workdirectory
         run: |
            pwd
