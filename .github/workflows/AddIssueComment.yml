@@ -1,9 +1,10 @@
+name: Comment Issue when labeled non-security
 on:
   issues:
     types: [opened, labeled, unlabeled]
    
 jobs:
-  comment-no-security:
+  comment-non-security:
     if: contains(github.event.issue.labels.*.name, 'non-security')
     runs-on: ubuntu-20.04
     permissions:
@@ -15,10 +16,6 @@ jobs:
         with:
           sparse-checkout: |
             .github/template/np-security-comment.md
-      - name: Show workdirectory
-        run: |
-           pwd
-           ls
       - name: Comment on issue with no security label
         uses: mshick/add-pr-comment@v2
         with:
