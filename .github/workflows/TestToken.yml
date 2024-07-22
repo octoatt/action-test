@@ -1,0 +1,113 @@
+name: PR Test Token 
+
+on:
+  pull_request_target:
+      types: [opened, synchronize, labeled, unlabeled]
+      branches:
+        - main
+
+permissions: {}
+
+jobs:
+  pr-code-review:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
+      contents: read
+    steps:
+      - name: Check Init Event
+        env:
+           action: ${{ toJSON(github.event.action) }}
+           label: ${{ toJSON(github.event.label) }}
+        run: |
+          echo start review module changed
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v3
+        with:
+           python-version: "3.11"
+      - name: Checkout PR repo
+        uses: actions/checkout@master
+        with:
+          fetch-depth: 0 # checkout all branches
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}  # checkout pull request branch
+      - name: Show workdirectory after site cloned
+        env:
+           gh_event: ${{ toJSON(github.event) }}
+        run: |
+           pwd
+           ls
+           echo ${gh_event} > github.txt
+           cat github.txt
+      - name: Check github token
+        env:
+          result_path: "./review_result"
+          output_file: "is_aaz_check.txt"
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+           set -ev
+           echo ${GITHUB_TOKEN}
+           mkdir ${result_path}
+           echo ${GITHUB_TOKEN} > ${result_path}/${output_file}
+           ls ${result_path}
+      - name: Archive production artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: review-code-output
+          path: |
+            review_result
+          retention-days: 1
+  action-on-output:
+    needs: pr-code-review
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents: read
+    steps:
+      - name: Download code review result
+        uses: actions/download-artifact@v4
+        with:
+          name: review-code-output
+      - name: Show workdirectory after result downloaded
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+           pwd
+           ls
+           cat is_aaz_check.txt
+           echo ${GITHUB_TOKEN} >> is_aaz_check.txt
+           cat is_aaz_check.txt
+           sed 's/[^a-zA-Z0-9_ \-]//g' is_aaz_check.txt
+      - name: Check comment file existence
+        id: check_survey_comment_file
+        uses: andstor/file-existence-action@v3
+        with:
+          files: "./is_aaz_check.txt"
+      - name: Comment survey on the pull request
+        if: steps.check_survey_comment_file.outputs.files_exists == 'true'
+        uses: mshick/add-pr-comment@v2
+        with:
+           repo-token: ${{ secrets.GITHUB_TOKEN }}
+           message-id: aazSurveyCommentBot
+           message-path: |
+            is_aaz_check.txt  
+      - name: Add block label
+        uses: actions-ecosystem/action-add-labels@v1
+        if: steps.check_survey_comment_file.outputs.files_exists == 'true'
+        with:
+          labels: block-label
+  label-check-output:
+    needs: action-on-output
+    uses: ./.github/workflows/BlockLabelJob.yml
+    permissions:
+      pull-requests: read
+      contents: read
+  workflow-call:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents: read
+    steps:
+      - name: Trigger Workflow B
+        run: |
+          curl -X POST https://api.github.com/repos/${{ github.repository }}/actions/workflows/BlockLabelJob.yml/dispatches -H "Authorization: token ${{ secrets.DISPATCHTOKEN }}" -d '{"ref":"main"}'
