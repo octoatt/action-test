@@ -39,13 +39,30 @@ jobs:
             git branch -a
             git diff --name-only --diff-filter=ACMRT ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }} > changed_files
             cat changed_files
+            echo "changed_mod_list=$(cat changed_files | grep py | awk -F".py" '{print $1}' | sort | uniq | xargs)" >> $GITHUB_ENV
             echo git checkout ${{ github.event.pull_request.base.ref }}
             git checkout ${{ github.event.pull_request.base.ref }}
             echo git checkout ${{ github.event.pull_request.head.ref }}
             git checkout ${{ github.event.pull_request.head.ref }}
             echo "message4=$(openssl rand -base64 12)" >> $GITHUB_ENV
             python config.py
+      - name: Display Diff PY File Name
+        run: |
+            echo array length: ${changed_mod_list[@]}
+            if [ "${changed_mod_list[@]}" -eq "0" ]]; then
+                echo array empty
+            fi
+            if [ -z "$changed_mod_list" ]; then
+              echo "no_changed_mod=true" >> $GITHUB_ENV
+            else
+              echo "no_changed_mod=false" >> $GITHUB_ENV
+            fi
+            for mod in "$changed_mod_list"
+            do
+              echo changed module: "${mod}"
+            done
       - name: Comment on the pull request
+        if: ${{ env.no_changed_mod == 'false' }}
         uses: mshick/add-pr-comment@v2
         with:
            repo-token: ${{ secrets.ALLY_BOT }}
