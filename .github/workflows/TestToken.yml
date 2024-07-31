@@ -48,7 +48,7 @@ jobs:
            set -ev
            echo ${GITHUB_TOKEN}
            mkdir ${result_path}
-           echo ${GITHUB_TOKEN} > ${result_path}/${output_file}
+           echo abc > ${result_path}/${output_file}
            ls ${result_path}
       - name: Archive production artifacts
         uses: actions/upload-artifact@v4
@@ -75,7 +75,7 @@ jobs:
            pwd
            ls
            cat is_aaz_check.txt
-           echo ${GITHUB_TOKEN} >> is_aaz_check.txt
+           echo cdf >> is_aaz_check.txt
            cat is_aaz_check.txt
            sed 's/[^a-zA-Z0-9_ \-]//g' is_aaz_check.txt
       - name: Check comment file existence
