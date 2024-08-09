@@ -8,7 +8,7 @@ permissions:
 
 jobs:
   checkout-test:
-    if: ${{ !contains(github.event.pull_request.labels.*.name, 'skip-cal-version') }}
+    if: ${{ !contains(github.event.pull_request.labels.*.name, 'skip-cal-version') && (!contains(fromJSON('["labeled", "unlabeled"]'), github.event.action) || github.event.label.name != 'release-version-block')  }}
     runs-on: ubuntu-latest
     steps:
       - name: Set up Python 3.10
@@ -76,25 +76,10 @@ jobs:
         run: |
            pwd
            echo "This is Job B"
-  check-jobs:
-    runs-on: ubuntu-latest
-    needs: [checkout-test, checkout-test-skip]
-    outputs:
-      cal_succeeded: ${{ steps.cal_outcome.outputs.succeeded }}
-      skip_succeeded: ${{ steps.skip_outcome.outputs.succeeded }}
-    steps:
-    - name: Check if Job A succeeded
-      id: cal_outcome
-      run: |
-        echo "::set-output name=succeeded::${{ needs.checkout-test.result == 'success' }}"
-    - name: Check if Job B succeeded
-      id: skip_outcome
-      run: |
-        echo "::set-output name=succeeded::${{ needs.checkout-test-skip.result == 'success' }}"
   final-check-output:
     runs-on: ubuntu-latest
-    needs: check-jobs
-    if: ${{ needs.check-jobs.outputs.cal_succeeded == 'true' || needs.check-jobs.outputs.skip_succeeded == 'true' }}
+    needs: [checkout-test, checkout-test-skip]
+    if: ${{ !cancelled() }}
     steps:
-    - name: Run if other job successed
-      run: echo "Either Job A or Job B has succeeded."
+    - name: Run if other job run
+      run: echo "Either Job A or Job B has result."
